@@ -5,6 +5,7 @@ import { hash } from 'argon2';
 
 @Injectable()
 export class UserService {
+  
   constructor(private readonly prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
     const{password,...user}=createUserDto;
@@ -29,6 +30,16 @@ export class UserService {
     return await this.prisma.user.findUnique({
       where: {
         id: userId,
+      },
+    });
+  }
+  async updateHashedRefreshToken(userId: number, hashedRT: string|null) {
+    return await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        hashedRefreshToken: hashedRT,
       },
     });
   }

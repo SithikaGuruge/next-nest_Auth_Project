@@ -5,8 +5,11 @@ import { verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import refreshConfig from './config/refresh.config';
 import { ConfigType } from '@nestjs/config';
+import { hash } from 'argon2';
+
 @Injectable()
 export class AuthService {
+  
 
 
   constructor(private readonly userService: UserService,
@@ -32,6 +35,8 @@ export class AuthService {
 }
 async login(userId:number,name?:string){
   const{accessToken,refreshToken} = await this.generateTokens(userId); 
+  const hashedRT = await hash(refreshToken);
+  await this.userService.updateHashedRefreshToken(userId,hashedRT);
   return {id:userId,
     name:name,
     accessToken,
@@ -80,12 +85,16 @@ async validateGoogleUser(googleUser: CreateUserDto)
 
 async refreshToken(userId:number,name:string){
   const{accessToken,refreshToken} = await this.generateTokens(userId); 
+  const hashedRT = await hash(refreshToken);
+  await this.userService.updateHashedRefreshToken(userId,hashedRT);
   return {id:userId,
     name:name,
     accessToken,
     refreshToken};
   }
-
+  async signOut(userId: number) {
+    return await this.userService.updateHashedRefreshToken(userId, null);
+  }
 
 }
 
