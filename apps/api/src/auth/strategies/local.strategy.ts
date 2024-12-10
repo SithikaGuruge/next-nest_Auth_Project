@@ -12,6 +12,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string) {
+    if (password ==="") throw new Error("Password is required"
+    )
     return this.authService.validateLocalUser(email, password);
   }
 }

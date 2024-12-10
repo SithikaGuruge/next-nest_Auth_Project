@@ -7,7 +7,7 @@ import refreshConfig from './config/refresh.config';
 import { ConfigType } from '@nestjs/config';
 @Injectable()
 export class AuthService {
-   
+
 
   constructor(private readonly userService: UserService,
     private readonly jwtService: JwtService,
@@ -56,12 +56,27 @@ async validateJwtUser(userId:number){
   return currentUser;
 }
 
-async validateRefreshToken(userId: number) {
+async validateRefreshToken(userId: number, refreshToken: string) {
   const user = await this.userService.findOne(userId);
-  if(!user) throw new UnauthorizedException('User not found!');
-  const currentUser = {id:user.id};
-  return currentUser;}
+  if (!user) throw new UnauthorizedException('User not found!');
 
+  const refreshTokenMatched = await verify(
+    user.hashedRefreshToken,
+    refreshToken,
+  );
+
+  if (!refreshTokenMatched)
+    throw new UnauthorizedException('Invalid Refresh Token!');
+  const currentUser = { id: user.id };
+  return currentUser;
+}
+
+async validateGoogleUser(googleUser: CreateUserDto)
+{
+  const user = await this.userService.findByEmail(googleUser.email);
+ if(user) return user;
+ return await this.userService.create(googleUser);
+}
 
 async refreshToken(userId:number,name:string){
   const{accessToken,refreshToken} = await this.generateTokens(userId); 
@@ -70,6 +85,7 @@ async refreshToken(userId:number,name:string){
     accessToken,
     refreshToken};
   }
+
 
 }
 
