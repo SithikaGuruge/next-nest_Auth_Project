@@ -8,12 +8,18 @@ import { JwtModule } from '@nestjs/jwt';
 import jwtConfig from './config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.stratergy';
+import refreshConfig from './config/refresh.config';
+import { RefreshStrategy } from './strategies/refresh-token.strategy';
+import googleOauthConfig from './config/google-oauth.config';
+import { GoogleStrategy } from './strategies/google-stratergy';
 
 @Module({
   imports: [JwtModule.registerAsync(jwtConfig.asProvider()),
-    ConfigModule.forFeature(jwtConfig)
+    ConfigModule.forFeature(jwtConfig),
+    ConfigModule.forFeature(refreshConfig),
+    ConfigModule.forFeature(googleOauthConfig)
   ],
   controllers: [AuthController],
-  providers: [AuthService,UserService,PrismaService,LocalStrategy,JwtStrategy],
+  providers: [AuthService,UserService,PrismaService,LocalStrategy,JwtStrategy,RefreshStrategy,GoogleStrategy],
 })
 export class AuthModule {}
