@@ -18,6 +18,7 @@ export class AuthService {
 
     const isPasswordMatched = verify(user.password,password);
     if(!isPasswordMatched) throw new UnauthorizedException('Invalid credentials!');
+    console.log(user);
 
     return {id:user.id,name:user.name};
 }
