@@ -13,6 +13,7 @@ import { RefreshStrategy } from './strategies/refresh-token.strategy';
 import googleOauthConfig from './config/google-oauth.config';
 import { GoogleStrategy } from './strategies/google-stratergy';
 import { JwtAuthGuard } from './guard/jwt-auth/jwt-auth.guard';
+import { RolesGuard } from './guard/roles/roles.guard';
 
 @Module({
   imports: [JwtModule.registerAsync(jwtConfig.asProvider()),
@@ -21,6 +22,6 @@ import { JwtAuthGuard } from './guard/jwt-auth/jwt-auth.guard';
     ConfigModule.forFeature(googleOauthConfig)
   ],
   controllers: [AuthController],
-  providers: [AuthService,UserService,PrismaService,LocalStrategy,JwtStrategy,RefreshStrategy,GoogleStrategy,{provide: 'APP_GUARD', useClass: JwtAuthGuard}],
+  providers: [AuthService,UserService,PrismaService,LocalStrategy,JwtStrategy,RefreshStrategy,GoogleStrategy,{provide: 'APP_GUARD',useClass:JwtAuthGuard},{provide: 'APP_GUARD', useClass: RolesGuard}],
 })
 export class AuthModule {}

@@ -6,6 +6,8 @@ import { LocalAuthGuard } from './guard/local-auth/local-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth/jwt-auth.guard';
 import { GoogleAuthGuard } from './guard/google-auth/google-auth.guard';
 import { Public } from './decorators/public.decorator';
+import { Roles } from './decorators/roles.decorator';
+import { RolesGuard } from './guard/roles/roles.guard';
 
 @Public()
 @Controller('auth')
@@ -21,10 +23,13 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post('signin')
     login(@Request() req){
-      return this.authService.login(req.user.id,req.user.name);
+      return this.authService.login(req.user.id,req.user.name,req.user.role);
 
     }
 
+    @Roles('ADMIN', 'EDITOR')
+    @UseGuards(RolesGuard)
+    @UseGuards(JwtAuthGuard)
     @Get('protected')
     getAll(@Request() req){
       return {message:`Now you can acess this route. This is your ID:${req.user.id}`};
@@ -48,9 +53,10 @@ export class AuthController {
     const resopnse = await this.authService.login(
       req.user.id,
       req.user.name,
+      req.user.role,
     );
     res.redirect(
-      `http://localhost:3000/api/auth/google/callback?userId=${resopnse.id}&name=${resopnse.name}&accessToken=${resopnse.accessToken}&refreshToken=${resopnse.refreshToken}`,
+      `http://localhost:3000/api/auth/google/callback?userId=${resopnse.id}&name=${resopnse.name}&accessToken=${resopnse.accessToken}&refreshToken=${resopnse.refreshToken}&role=${resopnse.role}`,
     );
   }
 
