@@ -9,6 +9,7 @@ import jwtConfig from './config/jwt.config';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.stratergy';
 import refreshConfig from './config/refresh.config';
+import { RefreshStrategy } from './strategies/refresh-token.strategy';
 
 @Module({
   imports: [JwtModule.registerAsync(jwtConfig.asProvider()),
@@ -16,6 +17,6 @@ import refreshConfig from './config/refresh.config';
     ConfigModule.forFeature(refreshConfig)
   ],
   controllers: [AuthController],
-  providers: [AuthService,UserService,PrismaService,LocalStrategy,JwtStrategy],
+  providers: [AuthService,UserService,PrismaService,LocalStrategy,JwtStrategy,RefreshStrategy],
 })
 export class AuthModule {}

@@ -27,5 +27,11 @@ export class AuthController {
       return {message:`Now you can acess this route. This is your ID:${req.user.id}`};
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post("refresh")
+    refreshToken(@Request() req){
+      return this.authService.refreshToken(req.user.id,req.user.name);
+    }
+
 
 }
