@@ -7,7 +7,7 @@ import {
   LoginFormSchema,
   SignupFormSchema,
 } from "./type";
-import { createSession, updateTokens } from "./session";
+import { createSession } from "./session";
 
 export async function signUp(
   state: FormState,
@@ -75,16 +75,16 @@ export async function signIn(
   if (response.ok) {
     const result = await response.json();
     console.log("Logged in",result);
-    // await createSession({
-    //   user: {
-    //     id: result.id,
-    //     name: result.name,
-    //     role: result.role,
-    //   },
-    //   accessToken: result.accessToken,
-    //   refreshToken: result.refreshToken,
-    // });
-    // redirect("/");
+    await createSession({
+      user: {
+        id: result.id,
+        name: result.name,
+        role: result.role,
+      },
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+    redirect("/");
   } else {
     return {
       message:
