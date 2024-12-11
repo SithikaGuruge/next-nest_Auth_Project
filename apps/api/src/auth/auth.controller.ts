@@ -7,46 +7,45 @@ import { JwtAuthGuard } from './guard/jwt-auth/jwt-auth.guard';
 import { GoogleAuthGuard } from './guard/google-auth/google-auth.guard';
 import { Public } from './decorators/public.decorator';
 import { Roles } from './decorators/roles.decorator';
-import { RolesGuard } from './guard/roles/roles.guard';
+import { RefreshAuthGuard } from './guard/refresh-auth/refresh-auth.guard';
 
-@Public()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('signup')
-  registerUser(
-    @Body() CreateUserDto:CreateUserDto){
-      return this.authService.registerUser(CreateUserDto);
+  registerUser(@Body() createUserDto: CreateUserDto) {
+    return this.authService.registerUser(createUserDto);
+  }
 
-    }
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  @Post('signin')
+  login(@Request() req) {
+    return this.authService.login(req.user.id, req.user.name, req.user.role);
+  }
 
-    @UseGuards(LocalAuthGuard)
-    @Post('signin')
-    login(@Request() req){
-      return this.authService.login(req.user.id,req.user.name,req.user.role);
+  @Roles('ADMIN')
+  @Get('protected')
+  getAll(@Request() req) {
+    return {
+      messege: `Now you can access this protected API. this is your user ID: ${req.user.id}`,
+    };
+  }
 
-    }
+  @Public()
+  @UseGuards(RefreshAuthGuard)
+  @Post('refresh')
+  refreshToken(@Request() req) {
+    return this.authService.refreshToken(req.user.id, req.user.name);
+  }
 
-    @Roles('ADMIN', 'EDITOR')
-    @UseGuards(RolesGuard)
-    @UseGuards(JwtAuthGuard)
-    @Get('protected')
-    getAll(@Request() req){
-      return {message:`Now you can acess this route. This is your ID:${req.user.id}`};
-    }
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  @Get('google/login')
+  googleLogin() {}
 
-    @Post("refresh")
-    refreshToken(@Request() req){
-      return this.authService.refreshToken(req.user.id,req.user.name);
-    }
-
-    @Public()
-    @UseGuards(GoogleAuthGuard)
-    @Get('google/login')
-    googleLogin() {}
-
-    @Public()
-    @UseGuards(GoogleAuthGuard)
+  @Public()
+  @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   async googleCallback(@Request() req, @Res() res: Response) {
     // console.log('Google User', req.user);
@@ -64,5 +63,4 @@ export class AuthController {
   signOut(@Req() req) {
     return this.authService.signOut(req.user.id);
   }
-
 }

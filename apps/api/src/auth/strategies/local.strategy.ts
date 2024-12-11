@@ -1,7 +1,7 @@
-import { PassportStrategy } from "@nestjs/passport";
-import { Strategy } from "passport-local";
-import { AuthService } from "../auth.service";
-import { Injectable } from "@nestjs/common";
+import { PassportStrategy } from '@nestjs/passport';
+import { Strategy } from 'passport-local';
+import { AuthService } from '../auth.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -11,9 +11,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(email: string, password: string) {
-    if (password ==="") throw new Error("Password is required"
-    )
+  validate(email: string, password: string) {
+    if (password === '')
+      throw new UnauthorizedException('Please provide your password!');
     return this.authService.validateLocalUser(email, password);
   }
 }

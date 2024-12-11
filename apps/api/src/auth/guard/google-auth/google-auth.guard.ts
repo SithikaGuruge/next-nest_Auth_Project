@@ -3,10 +3,4 @@ import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class GoogleAuthGuard extends AuthGuard('google') {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    return true;
-  }
-}
+export class GoogleAuthGuard extends AuthGuard('google') {}

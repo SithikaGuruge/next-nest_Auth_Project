@@ -14,14 +14,32 @@ import googleOauthConfig from './config/google-oauth.config';
 import { GoogleStrategy } from './strategies/google-stratergy';
 import { JwtAuthGuard } from './guard/jwt-auth/jwt-auth.guard';
 import { RolesGuard } from './guard/roles/roles.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
-  imports: [JwtModule.registerAsync(jwtConfig.asProvider()),
+  imports: [
+    JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshConfig),
-    ConfigModule.forFeature(googleOauthConfig)
+    ConfigModule.forFeature(googleOauthConfig),
   ],
   controllers: [AuthController],
-  providers: [AuthService,UserService,PrismaService,LocalStrategy,JwtStrategy,RefreshStrategy,GoogleStrategy,{provide: 'APP_GUARD',useClass:JwtAuthGuard},{provide: 'APP_GUARD', useClass: RolesGuard}],
+  providers: [
+    AuthService,
+    UserService,
+    PrismaService,
+    LocalStrategy,
+    JwtStrategy,
+    RefreshStrategy,
+    GoogleStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard, 
+    },
+  ],
 })
 export class AuthModule {}
